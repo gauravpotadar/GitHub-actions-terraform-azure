@@ -43,15 +43,15 @@ jobs:
 
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: ./terraform
 
       - name: Terraform Init (No Backend)
         run: terraform init -backend=false
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: ./terraform
 
       - name: Terraform Validate
         run: terraform validate
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: ./terraform
 
   plan:
     name: Terraform Plan
@@ -69,22 +69,22 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: ./terraform
 
       - name: Terraform Plan
         run: terraform plan -out=tfplan -input=false
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: ./terraform
 
       - name: Upload Plan Artifact
         uses: actions/upload-artifact@v4
         with:
           name: tfplan
-          path: ${{ env.WORKING_DIR }}/tfplan
+          path: ./terraform/tfplan
 
       - name: Show Plan (PR Only)
         if: github.event_name == 'pull_request'
         run: terraform show -no-color tfplan
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: ./terraform
 
   apply:
     name: Terraform Apply
@@ -104,14 +104,14 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: ./terraform
 
       - name: Download Plan Artifact
         uses: actions/download-artifact@v4
         with:
           name: tfplan
-          path: ${{ env.WORKING_DIR }}
+          path: ./terraform
 
       - name: Terraform Apply
         run: terraform apply -input=false -auto-approve tfplan
-        working-directory: ${{ env.WORKING_DIR }}
+        working-directory: ./terraform
